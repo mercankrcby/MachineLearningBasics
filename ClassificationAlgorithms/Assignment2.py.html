@@ -1,0 +1,425 @@
+
+# coding: utf-8
+
+# ## INTRODUCTION TO MACHINE LEARNING - ASSIGNMENT 2
+# by Mercan Karacabey
+
+# ##### QUESTION 1 : Please run the code for digit dataset that we have worked during the last class. Compare and discuss the outputs for the raw and scaled data as we did in the lab. Please assign the random state value randomly (you need to provide a random integer assignment).
+
+# In[7]:
+
+
+from time import time
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from sklearn import metrics
+from sklearn.cluster import KMeans
+from sklearn.datasets import load_digits
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import scale
+
+
+# In[4]:
+
+
+## Data preprocessing -- scaled data -- by z-score -- Data Standardization
+
+
+# In[15]:
+
+
+np.random.seed(42)
+
+digits_standardization = load_digits()
+## Data Scaling
+data = scale(digits_standardization.data)
+
+n_samples, n_features = data.shape
+n_digits = len(np.unique(digits_standardization.target))
+labels = digits_standardization.target
+
+sample_size = 300
+
+print("n_digits: %d, \t n_samples %d, \t n_features %d"
+      % (n_digits, n_samples, n_features))
+
+
+# In[16]:
+
+
+df = pd.DataFrame(data=digits_standardization.data)
+
+
+# In[17]:
+
+
+df.head()
+
+
+# In[12]:
+
+
+## Data Normalization
+
+
+# In[18]:
+
+
+from sklearn import preprocessing
+# load the iris dataset
+np.random.seed(42)
+digits_normalization = load_digits()
+print(digits_normalization.data.shape)
+# separate the data from the target attributes
+X = digits_normalization.data
+y = digits_normalization.target
+# normalize the data attributes
+normalized_X = preprocessing.normalize(X)
+
+
+# ##### Question 2: Please run the same code for 3 different test/train sizes such as 0.1, 0.3, 0.5 for raw dataset. Compare and discuss the obtained results. Which one is the best and why do you think so?
+
+# In[24]:
+
+
+## Test Train Size : 0.1 - Row Data
+
+
+# In[23]:
+
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split  # some documents still include the cross-validation option but it no more exists in version 18.0
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+
+y = digits_standardization.target
+X = digits_standardization.data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=10)
+
+gnb = GaussianNB(priors=None)
+fit = gnb.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+
+print(accuracy_score(y_test, predicted)) # the number of correct predictions
+unique_p, counts_p = np.unique(predicted, return_counts=True)
+
+
+# In[25]:
+
+
+## Test Train Size : 0.3 - Row Data 
+
+
+# In[26]:
+
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split  # some documents still include the cross-validation option but it no more exists in version 18.0
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+
+y = digits_standardization.target
+X = digits_standardization.data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+
+gnb = GaussianNB(priors=None)
+fit = gnb.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+
+print(accuracy_score(y_test, predicted)) # the number of correct predictions
+unique_p, counts_p = np.unique(predicted, return_counts=True)>
+
+
+# In[27]:
+
+
+## Test Train Size : 0.5 
+
+
+# In[28]:
+
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split  # some documents still include the cross-validation option but it no more exists in version 18.0
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+
+y = digits_standardization.target
+X = digits_standardization.data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=10)
+
+gnb = GaussianNB(priors=None)
+fit = gnb.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+
+print(accuracy_score(y_test, predicted)) # the number of correct predictions
+unique_p, counts_p = np.unique(predicted, return_counts=True)
+
+
+# ##### Question 3 : Please explain how the Gaussian Naive Bayesian model. How does Gaussian Naive Bayes algorithm work in the digit dataset? Assume that you are explaining it to a close friend of yours who has no background in data science but she is highly willing to learn it. Please do not forget to refer to the features, independence assumption, and labels.
+
+# Because of the assumption of the normal distribution, Gaussian Naive Bayes is best used in cases when all our features are continuous. The raw predicted probabilities from Gaussian naive Bayes (outputted using predict_proba) are not calibrated. That is, they should not be believed. If we want to create useful predicted probabilities we will need to calibrate them using an isotonic regression or a related method.
+# 
+# Say you've label A and B (hidden)
+# Label A
+#     - Have multiple words with different probabilities
+#     - Every word gives evidence if it's label A
+#     - We mutiply all the probabilities with the prior to find the joint probability of A
+# Label B
+#     - Have multiple words with different probabilities
+#     - Every word gives evidence if it's label B
+#     - We multiply all the probabilities with the prior to find the joint probability of B
+# Now you can find out the probability of it being A or B
+
+# ##### Question 4 : Please run the SVC (linear and RBF) code for iris dataset (that we worked during the class). Please perform the same algorithm for 4 different C values that you will decide. Then you should plot the outputs in the 2 x 2 plots (you need to get rid of the plots for label propagation but instead use SVC).
+
+# Paramerter C:
+# Large Value of parameter C => small margin
+# Small Value of paramerter C => Large margin
+
+# In[45]:
+
+
+# C Value => 1.0 & Gamma Value => 0.1 (C Value Const - Changed only Gamma Value)
+
+
+# In[55]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 1.0, gamma = 0.1)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# In[46]:
+
+
+# C Value => 1.0 & Gamma Value => 1
+
+
+# In[62]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 1.0, gamma=1)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# In[47]:
+
+
+# C Value => 1.0 & Gamma Value => 100
+
+
+# In[63]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 1.0, gamma=100)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# In[49]:
+
+
+# C Value => 1.0 & Gamma Value => 1000
+
+
+# In[64]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 1.0, gamma= 1000)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# In[59]:
+
+
+#C Value => 100.0 & Gamma Value => 1 (C Value Changed & Gamma Value Const)
+
+
+# In[65]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 100.0, gamma= 1)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# In[67]:
+
+
+#C Value => 1000.0 & Gamma Value => 1
+
+
+# In[66]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 1000.0, gamma= 1.0)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# In[69]:
+
+
+# C value Changed & Gamma Value Const
+
+
+# In[70]:
+
+
+import time
+start = time.time()
+
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn import svm
+
+np.random.seed(42)
+iris = load_iris()
+
+y = iris.target
+X = iris.data
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=10)
+clf = svm.SVC(kernel='linear', C = 10000.0, gamma= 1.0)
+
+fit = clf.fit(X_train, y_train)
+predicted = fit.predict(X_test)
+print(accuracy_score(y_test, predicted)) # the use of another function for calculating the accuracy (correct_predictions / all_predictions)
+
+done = time.time()
+elapsed = done - start
+
+
+# ##### Question 6: Please explain the need for semi-supervised learning methods. Please try to find a concrete example and discuss it. (At most 70 words).
+
+# Semi-supervised classification: Labeled data is used to help identify that there are specific groups of webpage types present in the data and what they might be. The algorithm is then trained on unlabeled data to define the boundaries of those webpage types and may even identify new types of webpages that were unspecified in the existing human-inputted labels.
+
+# ##### Question 7 : Please provide two concrete examples: one of them is more suitable for applying Naïve Bayes algorithm and the other for Support Vector Machine algorithm. Provide a very rough comparison accordingly
+
+# Naive Bayes Algorithms -> A school with a total population of 100 persons. These 100 persons can be seen either as ‘Students’ and ‘Teachers’ or as a population of ‘Males’ and ‘Females’.
+# 
+# 100 people, what is the conditional probability that a certain member of the school is a ‘Teacher’ given that he is a ‘Man’?
+# 
+# Support Vector Machine -> Detect (localize) standing humans in an image 
+# Face detection with a sliding window classifier
